@@ -1,4 +1,4 @@
-    ////////\\\\\\\\\\
+////////\\\\\\\\\\
     //      A       \\
     //    Simple    \\
     //  FloppyBird  \\
@@ -14,7 +14,6 @@
 
 // Game Variables
 bool pause;
-bool touch;
 
 // Class
 class Player { public:
@@ -45,9 +44,10 @@ void Update();
 void Draw();
 void UnloadGame();
 void GameOverMenue();
-void Pause();
 void MovePlayer();
 void MoveObstackles();
+void CollisionTest();
+void RandomiseObsDim(int ith_obs);
 
 
 int main() {
@@ -62,10 +62,9 @@ int main() {
 }
 
 
-void InitGame() {
+void InitGame() {w
     // Init Game Variables
     pause = false;
-    touch = false;
 
     // Init Player Variables
     Player.score = 0;
@@ -105,11 +104,9 @@ void InitGame() {
 }
 
 void Update() {
-    if (Player.life > 0) {
-        if (touch) Player.life --;
         MovePlayer();
         MoveObstackles();
-    }
+        CollisionTest();
 }
 
 void Draw() {
@@ -137,27 +134,75 @@ void MoveObstackles() {
         if(Obstackle[i].Obstackle.x <=0) {
             Obstackle[i].Obstackle.x = SCREEN_W - 50;
             Player.score+=10;
+            RandomiseObsDim(i);
         }
     }
 }
 
-void GameOverMenue() {
+void CollisionTest() {
+    for(int i=0; i<MAX_OBS; i++) {
+        if(CheckCollisionRecs(Player.Player, Obstackle[i].Obstackle)) {
+            Player.life--;
+            Obstackle[i].color = RED;
+        }
+    }
+}
 
+void RandomiseObsDim(int ith_obs) {
+    float h1, h2;
+
+    h1 = GetRandomValue(100, 300);
+    h2 = GetRandomValue(100, 300);
+
+    Obstackle[ith_obs].Obstackle.height = h1;
+    Obstackle[ith_obs + 5].Obstackle.height = h2;
+}
+
+void GameOverMenue() {
+    bool restart = false;
+    bool escape = false;
+    while(!restart and !escape) {
+        restart = IsKeyPressed(KEY_R);
+        escape = IsKeyPressed(KEY_ESCAPE);
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+            DrawRectangleRec(Player.Player, Player.color);
+            for(int i = 0; i < MAX_OBS; i++) DrawRectangleRec(Obstackle[i].Obstackle, Obstackle[i].color);
+
+            DrawRectangle(0, 0, SCREEN_W, SCREEN_H, Fade(BLACK, 0.7f));
+            Rectangle rect = { SCREEN_W/2 - 100, SCREEN_H/2 - 50, 200, 100 };
+            DrawRectangleRounded(rect, 0.3f, 10, PURPLE);
+            DrawText("Press 'R' to restart and 'esc' to close the game", SCREEN_W/2-100, SCREEN_H/2-50, 10, RED);
+
+
+        EndDrawing();
+    }
+    if(restart) InitGame();
+    // if(escape) CloseWindow();
 }
 
 void UnloadGame() {
     
 }
 
-void Pause() {
-    while(pause) {}
-}
-
 void UpdateDraw() {
     if (IsKeyPressed(KEY_P)) pause = !pause;
+    
     if(!pause) {
         Update();
         Draw();
         if (Player.life == 0) GameOverMenue();
+    }
+    else {
+        // Just draw the current state
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+            // Draw game elements (frozen)
+            DrawRectangleRec(Player.Player, Player.color);
+            for(int i = 0; i < MAX_OBS; i++) DrawRectangleRec(Obstackle[i].Obstackle, Obstackle[i].color);
+            
+            // Draw pause indicator
+            DrawText("PAUSED - Press P to Resume", 10, 10, 20, BLACK);
+        EndDrawing();
     }
 }
