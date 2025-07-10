@@ -5,6 +5,7 @@
     ////////\\\\\\\\\\
 
 #include <raylib.h>
+#include <raymath.h>
 
 // Global Declare
 #define MAX_OBS 10
@@ -44,6 +45,9 @@ void Update();
 void Draw();
 void UnloadGame();
 void GameOverMenue();
+void Pause();
+void MovePlayer();
+void MoveObstackles();
 
 
 int main() {
@@ -75,27 +79,36 @@ void InitGame() {
     Player.speed = 10;
     Player.color = GRAY;
 
-    // Init Obstackle Variables
-    for(int i=0; i<MAX_OBS; i++) {
-        Obstackle->height = 200;
-        Obstackle->width = 50;
-        Obstackle->Obstackle.height = Obstackle->height;
-        Obstackle->Obstackle.width = Obstackle->width;
-        Obstackle->Obstackle.x = 600;
-        Obstackle->Obstackle.y = 600;
-        Obstackle->speed = 10;
-        Obstackle->color = MAROON;
+    // Init Obstackle Variables for Bottom
+    for(int i=0; i<MAX_OBS/2; i++) {
+        Obstackle[i].height = 200;
+        Obstackle[i].width = 50;
+        Obstackle[i].Obstackle.height = Obstackle[i].height;
+        Obstackle[i].Obstackle.width = Obstackle[i].width;
+        Obstackle[i].Obstackle.x = 600 + (i * 200); // Space them out
+        Obstackle[i].Obstackle.y = SCREEN_H - 200;   // Bottom obstacles
+        Obstackle[i].speed = 5;
+        Obstackle[i].color = MAROON;
     }
-
+    // Init Obstackle Variables for Top
+    for(int i=MAX_OBS/2; i<MAX_OBS; i++) {
+        Obstackle[i].height = 200;
+        Obstackle[i].width = 50;
+        Obstackle[i].Obstackle.height = Obstackle[i].height;
+        Obstackle[i].Obstackle.width = Obstackle[i].width;
+        Obstackle[i].Obstackle.x = 600 + ((i - MAX_OBS/2) * 200); // Space them out
+        Obstackle[i].Obstackle.y = 0;               // Top obstacles
+        Obstackle[i].speed = 5;
+        Obstackle[i].color = MAROON;
+    }
+    
 }
 
 void Update() {
     if (Player.life > 0) {
-        if (IsKeyPressed(KEY_P)) pause = !pause;
-        if (!pause) {
-            if (touch) Player.life --;
-            
-        }
+        if (touch) Player.life --;
+        MovePlayer();
+        MoveObstackles();
     }
 }
 
@@ -103,22 +116,48 @@ void Draw() {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
+        // Draw Players
         DrawRectangleRec(Player.Player, Player.color);
-        DrawRectangleRec(Obstackle->Obstackle, Obstackle->color);
+        // Draw all obstacles
+        for(int i = 0; i < MAX_OBS; i++) DrawRectangleRec(Obstackle[i].Obstackle, Obstackle[i].color);
 
     EndDrawing();
+}
+
+void MovePlayer() {
+    if(IsKeyDown(KEY_W)) Player.Player.y -= Player.speed;
+    if(IsKeyDown(KEY_S)) Player.Player.y += Player.speed;
+    else Player.Player.y += 0.5*Player.speed;
+    Player.Player.y = Clamp(Player.Player.y, 0.0f, SCREEN_H - Player.height);
+}
+
+void MoveObstackles() {
+    for(int i=0; i<MAX_OBS; i++) {
+        Obstackle[i].Obstackle.x -= Obstackle->speed;
+        if(Obstackle[i].Obstackle.x <=0) {
+            Obstackle[i].Obstackle.x = SCREEN_W - 50;
+            Player.score+=10;
+        }
+    }
 }
 
 void GameOverMenue() {
 
 }
 
-void UpdateDraw() {
-    Update();
-    Draw();
-    if (Player.life == 0) GameOverMenue();
+void UnloadGame() {
+    
 }
 
-void UnloadGame() {
+void Pause() {
+    while(pause) {}
+}
 
+void UpdateDraw() {
+    if (IsKeyPressed(KEY_P)) pause = !pause;
+    if(!pause) {
+        Update();
+        Draw();
+        if (Player.life == 0) GameOverMenue();
+    }
 }

@@ -24,7 +24,7 @@
 .PHONY: all clean
 
 # Define required raylib variables
-PROJECT_NAME       ?= main
+PROJECT_NAME       ?= game
 RAYLIB_VERSION     ?= 5.0.0
 RAYLIB_PATH        ?= ..\..
 
