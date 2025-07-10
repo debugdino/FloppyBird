@@ -62,7 +62,7 @@ int main() {
 }
 
 
-void InitGame() {w
+void InitGame() {
     // Init Game Variables
     pause = false;
 
