@@ -2,7 +2,6 @@
 bool keyHeld = false;
 
 void MovePlayer() {
-    LoadAudio();
     if(IsKeyDown(KEY_W)) {
         if(!keyHeld) {
             PlaySound(PlayerMoveS);

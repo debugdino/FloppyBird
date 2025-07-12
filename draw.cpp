@@ -5,6 +5,14 @@ void Draw() {
     // Beautiful sky gradient background
     ClearBackground((Color){135, 206, 235, 255}); // Sky blue
     
+    // Stretch texture to fit screen width
+    // float scaleX = SCREEN_W / (float)BackTexture.width;
+    // DrawTextureEx(BackTexture, (Vector2){0, 0}, 0.0f, scaleX, WHITE);
+    DrawTexturePro(BackTexture, 
+    (Rectangle){0, 0,(float) BackTexture.width, (float) BackTexture.height}, 
+    (Rectangle){0, 0, SCREEN_W, SCREEN_H}, 
+    (Vector2){0, 0}, 0.0f, WHITE);
+    
     // Add some ground
     DrawRectangle(0, SCREEN_H - 100, SCREEN_W, 100, (Color){34, 139, 34, 255}); // Forest green ground
     DrawRectangle(0, SCREEN_H - 20, SCREEN_W, 20, (Color){139, 69, 19, 255}); // Saddle brown dirt

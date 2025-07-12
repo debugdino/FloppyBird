@@ -8,6 +8,7 @@ ObstackleClass Obstackle[MAX_OBS];
 int main() {
     InitWindow(SCREEN_W, SCREEN_H, "Flappy Bird");
     InitAudioDevice();
+    LoadGame();
 
     InitGame();
     GameStartMenue();

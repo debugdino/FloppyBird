@@ -1,9 +1,15 @@
 #include "game.h"
+#include <thread>
+#include <chrono>
 Sound PlayerMoveS;
+Sound Hit;
+
+Image Background;
+Texture BackTexture;
 
 void InitGame() {
     // Init Audio
-    LoadAudio();
+    LoadGame();
 
     // Init Game Variables
     pause = false;
@@ -74,6 +80,7 @@ void Update() {
 void CollisionTest() {
     for(int i=0; i<MAX_OBS; i++) {
         if(CheckCollisionRecs(Player.Player, Obstackle[i].Obstackle)) {
+            PlaySound(Hit);
             Player.life--;
             
             if(Player.life <= 0) {
@@ -82,15 +89,8 @@ void CollisionTest() {
             }
             else {
                 // Reset player position to safe area
-                Player.Player.x = 30;
-                Player.Player.y = SCREEN_H/2;
-                
-                // Optional: Move obstacles away temporarily
-                for(int j = 0; j < MAX_OBS; j++) {
-                    if(Obstackle[j].Obstackle.x < 200) {
-                        Obstackle[j].Obstackle.x = 200;
-                    }
-                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                InitGame();
                 break;
             }
         }
@@ -116,9 +116,20 @@ void RandomiseObsDim(int ith_obs) {
 }
 
 void UnloadGame() {
+    // Audio
     UnloadSound(PlayerMoveS);
+    UnloadSound(Hit);
+
+    // Image
+    UnloadImage(Background);
+    UnloadTexture(BackTexture);
 }
 
-void LoadAudio() {
+void LoadGame() {
+    // Audio
     PlayerMoveS = LoadSound("assets/sound/player_movement.mp3");
+    Hit = LoadSound("assets/sound/hit-by-a-wood.mp3");
+
+    //Image
+    Background = LoadImage("assets/pictures/copied_test.jpeg"); BackTexture = LoadTextureFromImage(Background);
 }

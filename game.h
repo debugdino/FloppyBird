@@ -12,6 +12,9 @@
 // Game Variables
 extern bool pause;
 extern Sound PlayerMoveS;
+extern Sound Hit;
+extern Image Background;
+extern Texture BackTexture;
 
 // Class
 class PlayerClass { public:
@@ -49,4 +52,4 @@ void MoveObstackles();
 void CollisionTest();
 void RandomiseObsDim(int ith_obs);
 void GameStartMenue();
-void LoadAudio();
+void LoadGame();
